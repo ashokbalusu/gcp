@@ -128,7 +128,7 @@ jobs:
       run: terraform apply -auto-approve -input=false
     
     - name: General
-      run: echo "Branch name is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      run: echo "Branch name is ${{ github.ref }} , your repository is ${{ github.repository }} and event name is ${{github.event_name }}."
     - name: Job Status
       run: echo "Job's status is ${{ job.status }}."
   
