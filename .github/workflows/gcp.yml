@@ -9,8 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  terraform:
-    name: 'Terraform'
+  Setup:
+    name: 'Setup preparation'
     runs-on: ubuntu-latest
     environment: dev
     permissions:
@@ -36,6 +36,21 @@ jobs:
        workload_identity_provider: 'projects/1035825222474/locations/global/workloadIdentityPools/github-pool/providers/github'
        service_account: 'gcp-github@gcpttprojectid.iam.gserviceaccount.com'
 
+  terraform:
+    name: 'Setup Terraform'
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      contents: 'read'
+      pages: write
+      id-token: write
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
@@ -59,6 +74,12 @@ jobs:
     - name: Terraform Apply
       if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
+    
+    - name: General
+      run: echo "Branch name is ${{ github.ref }} and your repository is ${{ github.repository }}."
+    - name: Job Status
+      run: echo "Job's status is ${{ job.status }}."
+  
 
 
 # name: GitHub Actions Demo
