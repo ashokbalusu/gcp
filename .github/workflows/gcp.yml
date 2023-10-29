@@ -43,21 +43,21 @@ jobs:
        workload_identity_provider: ${{ secrets.gcp_project }}
        service_account: ${{ secrets.gcp_github_service_account }}
 
-  terraform:
-    name: 'Setup Terraform'
-    runs-on: ubuntu-latest
-    environment: dev
-    permissions:
-      contents: 'read'
-      pages: write
-      id-token: write
+  # terraform:
+  #   name: 'Setup Terraform'
+  #   runs-on: ubuntu-latest
+  #   environment: dev
+  #   permissions:
+  #     contents: 'read'
+  #     pages: write
+  #     id-token: write
 
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
+  #   # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+  #   defaults:
+  #     run:
+  #       shell: bash
 
-    steps:
+  #   steps:
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
