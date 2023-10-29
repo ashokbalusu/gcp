@@ -3,6 +3,11 @@ name: 'Terraform'
 on:
   push:
     branches: [ "main" ]
+  # # Sequence of patterns matched against refs/tags
+  # tags:        
+  # - v2
+  # - v1.*
+  
   pull_request:
 
 permissions:
@@ -33,8 +38,10 @@ jobs:
       name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v0.4.0'
       with:
-       workload_identity_provider: 'projects/1035825222474/locations/global/workloadIdentityPools/github-pool/providers/github'
-       service_account: 'gcp-github@gcpttprojectid.iam.gserviceaccount.com'
+      #  workload_identity_provider: 'projects/1035825222474/locations/global/workloadIdentityPools/github-pool/providers/github'
+      #  service_account: 'gcp-github@gcpttprojectid.iam.gserviceaccount.com'
+       workload_identity_provider: ${{ secrets.gcp_project }}
+       service_account: ${{ secrets.gcp_github_service_account }}
 
   terraform:
     name: 'Setup Terraform'
