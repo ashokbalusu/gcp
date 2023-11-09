@@ -3,18 +3,15 @@ name: 'Terraform'
 on:
   push:
     branches: [ "main" ]
-  # # Sequence of patterns matched against refs/tags
-  # tags:        
-  # - v2
-  # - v1.*
-  
   pull_request:
 
 permissions:
   contents: read
 
 jobs:
-  Setup:
+  Terraform_Setup:
+    # if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    # # if: github.event.pull_request.merged == true
     name: 'Setup preparation'
     runs-on: ubuntu-latest
     environment: dev
@@ -43,26 +40,13 @@ jobs:
        workload_identity_provider: ${{ secrets.gcp_project }}
        service_account: ${{ secrets.gcp_github_service_account }}
 
-  # terraform:
-  #   name: 'Setup Terraform'
-  #   runs-on: ubuntu-latest
-  #   environment: dev
-  #   permissions:
-  #     contents: 'read'
-  #     pages: write
-  #     id-token: write
-
-  #   # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-  #   defaults:
-  #     run:
-  #       shell: bash
-
   #   steps:
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+        # version: "0.12.15"
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
@@ -76,50 +60,9 @@ jobs:
     # An exit code of 0 indicated no changes, 1 a terraform failure, 2 there are pending changes.
     - name: Terraform Plan
       id: tf-plan
-      run: terraform plan -input=false
-    #   run: |
-    #     export exitcode=0
-    #     terraform plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
+      run: terraform plan -input=false 
+      # run: terraform plan -input=false -detailed-exitcode
 
-    #     echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
-        
-    #     if [ $exitcode -eq 1 ]; then
-    #       echo Terraform Plan Failed!
-    #       exit 1
-    #     else 
-    #       exit 0
-    #     fi
-      
-    # # Save plan to artifacts  
-    # - name: Publish Terraform Plan
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: tfplan
-    #     path: tfplan
-
-    # # Create string output of Terraform Plan
-    # - name: Create String Output
-    #   id: tf-plan-string
-    #   run: |
-    #     TERRAFORM_PLAN=$(terraform show -no-color tfplan)
-        
-    #     delimiter="$(openssl rand -hex 8)"
-    #     echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
-    #     echo "## Terraform Plan Output" >> $GITHUB_OUTPUT
-    #     echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
-    #     echo "" >> $GITHUB_OUTPUT
-    #     echo '```terraform' >> $GITHUB_OUTPUT
-    #     echo "$TERRAFORM_PLAN" >> $GITHUB_OUTPUT
-    #     echo '```' >> $GITHUB_OUTPUT
-    #     echo "</details>" >> $GITHUB_OUTPUT
-    #     echo "${delimiter}" >> $GITHUB_OUTPUT
-
-    # # Publish Terraform Plan as task summary
-    # - name: Publish Terraform Plan to Task Summary
-    #   env:
-    #     SUMMARY: ${{ steps.tf-plan-string.outputs.summary }}
-    #   run: |
-    #     echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
     # On push to "main", build or change infrastructure according to Terraform configuration files
     # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
@@ -134,22 +77,4 @@ jobs:
   
 
 
-# name: GitHub Actions Demo
-# run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-# on: [push]
-# jobs:
-#   Explore-GitHub-Actions:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-#       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-#       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-#       - name: Check out repository code
-#         uses: actions/checkout@v4
-#       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-#       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-#       - name: List files in the repository
-#         run: |
-#           ls ${{ github.workspace }}
-#       - run: echo "🍏 This job's status is ${{ job.status }}."
 
