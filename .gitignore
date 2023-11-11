@@ -7,8 +7,8 @@ __pycache__/
 *.so
 
 # local ignores
-./gcp_original.yml
-./gcp.yml.ignore.txt
+gcp_original.yml
+gcp.yml.ignore.txt
 
 # Distribution / packaging
 .Python
