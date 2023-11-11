@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# local ignores
+./gcp_original.yml
+./gcp.yml.ignore.txt
+
 # Distribution / packaging
 .Python
 build/

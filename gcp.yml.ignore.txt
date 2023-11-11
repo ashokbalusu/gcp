@@ -1,0 +1,82 @@
+name: 'GitHub Actions for Terraform setup'
+
+on:
+  push:
+    branches: [ "dev" ]  
+  pull_request:
+
+jobs:
+  Terraform_Setup:
+    # if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    name: 'Terraform setup preparation'
+    runs-on: [self-hosted, Linux, X64, enterprise]
+    environment: dev
+    env:
+      TF_CLOUD_ORGANIZATION: hca-healthcare
+      TF_WORKSPACE: ${{ inputs.tf-workspace }}
+      TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ inputs.tf-path }}
+        
+    permissions:
+      contents: 'read'
+      pages: write
+      id-token: write
+
+    steps:
+      - id: 'auth'
+        name: 'GitHub Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0.4.0'
+        with:
+          workload_identity_provider: ${{ secrets.gcp_project }}
+          service_account: ${{ secrets.gcp_github_service_account }}
+
+      - name: General
+        run: echo "working dir ${{github.action.tf_actions_working_dir }} ,branch name is ${{ github.ref }} , your repository is ${{ github.repository }} and event name is ${{github.event_name }}."
+      - name: Job Status
+        run: echo "Job's status is ${{ job.status }}."
+
+      # - name: create temp dir
+      #   shell: bash
+      #   run: mkdir tf_test -Force
+
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: main
+        
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v2
+      #   with:
+      #     cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      #     terraform_version: 1.6.1
+  
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
+      
+      # Checks that all Terraform configuration files adhere to a canonical format
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      # Generates an execution plan for Terraform
+      # An exit code of 0 indicated no changes, 1 a terraform failure, 2 there are pending changes.
+      - name: Terraform Plan
+        id: tf-plan
+        run: terraform plan -input=false -no-color
+        env:
+          workload_identity_provider: ${{ secrets.gcp_project }}
+          service_account: ${{ secrets.gcp_github_service_account }}
+
+      # On push to "main", build or change infrastructure according to Terraform configuration files
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+      - name: Terraform Apply
+        # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+        run: terraform apply -auto-approve -input=false
