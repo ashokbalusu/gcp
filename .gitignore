@@ -9,6 +9,7 @@ __pycache__/
 # local ignores
 gcp_original.yml
 gcp.yml.ignore.txt
+sample.txt
 
 # Distribution / packaging
 .Python
