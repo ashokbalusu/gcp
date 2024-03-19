@@ -1,0 +1,44 @@
+{
+  "protoPayload": {
+    "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+    "status": {},
+    "authenticationInfo": {
+      "principalEmail": "jud8374@hca.corpad.net"
+    },
+    "requestMetadata": {
+      "callerIp": "165.214.72.83",
+      "callerSuppliedUserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36,gzip(gfe),gzip(gfe)",
+      "requestAttributes": {},
+      "destinationAttributes": {}
+    },
+    "serviceName": "bigquery.googleapis.com",
+    "methodName": "google.cloud.bigquery.v2.DatasetService.DeleteDataset",
+    "authorizationInfo": [
+      {
+        "resource": "projects/hcahde040-prod-data/datasets/test_bar",
+        "permission": "bigquery.datasets.delete",
+        "granted": true,
+        "resourceAttributes": {}
+      }
+    ],
+    "resourceName": "projects/hcahde040-prod-data/datasets/test_bar",
+    "metadata": {
+      "@type": "type.googleapis.com/google.cloud.audit.BigQueryAuditMetadata",
+      "datasetDeletion": {
+        "reason": "DELETE"
+      }
+    }
+  },
+  "insertId": "-wq1vvnd2non",
+  "resource": {
+    "type": "bigquery_dataset",
+    "labels": {
+      "dataset_id": "test_bar",
+      "project_id": "hcahde040-prod-data"
+    }
+  },
+  "timestamp": "2024-02-26T19:14:13.663718Z",
+  "severity": "NOTICE",
+  "logName": "projects/hcahde040-prod-data/logs/cloudaudit.googleapis.com%2Factivity",
+  "receiveTimestamp": "2024-02-26T19:14:14.538104992Z"
+}
